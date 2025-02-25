@@ -37,3 +37,9 @@
   cursor: pointer;
   transition: all 0.3s;
 }
+
+.active_file{
+  border: 1px solid teal;
+  color: teal;
+  fill: teal;
+}

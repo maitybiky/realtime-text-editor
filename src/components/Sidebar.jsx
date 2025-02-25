@@ -24,7 +24,7 @@ const Sidebar = () => {
         </li>
       </ul>
       <ul className="flex flex-col w-full gap-2 p-4 h-full overflow-y-auto">
-        <li className="flex justify-start gap-2 items-center bg-gray-50 p-3 shadow-md rounded-md border border-gray-300 cursor-pointer">
+        <li className="active_file flex justify-start gap-2 items-center bg-gray-50 p-3 shadow-md rounded-md border border-gray-300 cursor-pointer">
           <IoMdDocument fill="gray" size={25} />
           <span className="text-gray-500">Portfolio.txt</span>
         </li>
