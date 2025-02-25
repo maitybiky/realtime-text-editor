@@ -1,15 +1,15 @@
 import React from "react";
-import EditTools from "@/components/EditTools";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
+import DocsEditor from "@/components/Editor";
 
 const HomePage = () => {
   return (
     <>
       <Navbar />
       <Sidebar />
-      <section className="ml-80 mt-24 px-5 ">
-        <EditTools />
+      <section className="ml-80 mt-20 h-[37.8rem]">
+        <DocsEditor />
       </section>
     </>
   );
