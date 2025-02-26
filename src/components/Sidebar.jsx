@@ -1,5 +1,6 @@
 "use client";
 
+import { createDocument } from "@/lib/api/docs";
 import React, { useState, useEffect, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
@@ -32,12 +33,16 @@ const Sidebar = () => {
     };
   }, [createNewDocument]);
 
-  const handleCreateNewFile = () => {
+  const handleCreateNewFile = async () => {
+    console.log('hi')
     if (newFileName.trim() !== "") {
       let formattedName = newFileName.trim();
       if (!formattedName.endsWith(".txt")) {
         formattedName += ".txt"; // Ensure the file has .txt extension
       }
+console.log('formattedName :>> ', formattedName);
+      const response = await createDocument();
+      console.log('response :>> ', response);
       setFiles([...files, formattedName]); // Add new file to state
       setNewFileName(""); // Reset input
       setCreateNewDocument(false); // Close input
@@ -78,7 +83,7 @@ const Sidebar = () => {
               onChange={(e) => setNewFileName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreateNewFile()}
               type="text"
-              placeholder="Enter file name..."
+              placeholder="Enter file name.ssss.."
               className="w-full border outline-none border-none bg-transparent"
             />
           </li>
