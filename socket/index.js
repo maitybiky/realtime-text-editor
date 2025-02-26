@@ -26,31 +26,31 @@ io.on("connection", (socket) => {
   });
 
   //
-  socket.on("docs-changes", async ({ documentId, userId, content }) => {
-    console.log(`✍️ Update on ${documentId}:`, userId);
+  socket.on("send-changes", async ({delta,workspaceId}) => {
+    console.log("{ documentId, userId, content }", delta);
+    socket.to(workspaceId).emit("receive-changes", { delta });
+    // try {
+    //   await Docs.findByIdAndUpdate(documentId, { $set: { content } });
 
-    try {
-      await Docs.findByIdAndUpdate(documentId, { $set: { content } });
-
-      // socket.to(documentId).emit("receive-changes", delta);
-    } catch (error) {
-      console.error("Error updating document:", error);
-    }
+    //   // socket.to(documentId).emit("receive-changes", delta);
+    // } catch (error) {
+    //   console.error("Error updating document:", error);
+    // }
   });
-  connectDB().then(() => {
-    console.log("📡 MongoDB Change Stream Started");
+  // connectDB().then(() => {
+  //   console.log("📡 MongoDB Change Stream Started");
 
-    const changeStream = Docs.watch();
-    changeStream.on("change", (change) => {
-      if (change.operationType === "update") {
-        const documentId = change.documentKey._id.toString();
-        const updatedContent = change.updateDescription.updatedFields.content;
+  //   const changeStream = Docs.watch();
+  //   changeStream.on("change", (change) => {
+  //     if (change.operationType === "update") {
+  //       const documentId = change.documentKey._id.toString();
+  //       const updatedContent = change.updateDescription.updatedFields.content;
 
-        console.log(`🔄 Document Updated: ${documentId}`);
-        io.to(documentId).emit("receive-changes", updatedContent);
-      }
-    });
-  });
+  //       console.log(`🔄 Document Updated: ${documentId}`);
+  //       io.to(documentId).emit("receive-changes", updatedContent);
+  //     }
+  //   });
+  // });
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
