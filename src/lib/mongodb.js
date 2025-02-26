@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.Next_PUBLIC_MONGO_URI;
-
+console.log('MONGODB_URI :>> ', MONGODB_URI);
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
 }
@@ -18,10 +18,7 @@ export async function connectToDatabase() {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }).then((mongoose) => mongoose);
+    cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => mongoose).catch((err)=>console.log('err :>> ', err));
   }
 
   cached.conn = await cached.promise;
