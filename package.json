@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mongoose": "^8.10.2",
     "next": "15.1.7",
     "quill": "^2.0.3",
     "react": "^19.0.0",
