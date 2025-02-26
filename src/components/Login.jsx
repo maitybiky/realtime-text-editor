@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import CommonModal from "./CommonModal";
 import Image from "next/image";
+import API from "@/lib/axios";
 
 const Login = ({ onClose }) => {
   const [isOpenRegisterModal, setIsOpenRegisterModal] = useState(false);
@@ -16,6 +17,55 @@ const Login = ({ onClose }) => {
       setIsOpenRegisterModal(true);
     } else {
       setIsOpenRegisterModal(false);
+    }
+  };
+
+  const handleRegister = async () => {
+    if (!email || !password || !username) {
+      alert("Please fill all the fields");
+      return;
+    }
+
+    try {
+      const response = await API.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
+        {
+          email,
+          password,
+          username,
+        }
+      );
+
+      console.log("Response:", response);
+      alert("User registered successfully");
+      onClose();
+    } catch (error) {
+      console.error("Registration Error:", error);
+      alert(error.response?.data?.message || "Registration failed");
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert("Please fill all the fields");
+      return;
+    }
+
+    try {
+      const response = await API.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+        {
+          email,
+          password,
+        }
+      );
+
+      console.log("Response:", response);
+      alert("User logged in successfully");
+      onClose();
+    } catch (error) {
+      console.error("Login Error:", error);
+      alert(error.response?.data?.message || "Login failed");
     }
   };
 
@@ -68,8 +118,11 @@ const Login = ({ onClose }) => {
                 placeholder="Password"
                 className="border border-gray-300 p-2 mb-4 w-[50%] rounded-md"
               />
-              <button className="bg-blue-500 text-white p-2 w-[60%] rounded-md">
-                Login
+              <button
+                onClick={handleRegister}
+                className="bg-blue-500 text-white p-2 w-[60%] rounded-md"
+              >
+                Register
               </button>
               <p className="text-center mt-4">
                 <span>Don't have an account? </span>
@@ -123,7 +176,10 @@ const Login = ({ onClose }) => {
                 placeholder="Password"
                 className="border border-gray-300 p-2 w-[50%] mb-4 rounded-md"
               />
-              <button className="bg-blue-500 text-white p-2 w-[60%] rounded-md">
+              <button
+                onClick={handleLogin}
+                className="bg-blue-500 text-white p-2 w-[60%] rounded-md"
+              >
                 Login
               </button>
               <p className="text-center mt-4">
