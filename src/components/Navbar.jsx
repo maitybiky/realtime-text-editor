@@ -5,19 +5,23 @@ import Image from "next/image";
 import { FcInvite } from "react-icons/fc";
 import { GoDotFill } from "react-icons/go";
 import CommonModal from "./CommonModal";
+import { CiLogin } from "react-icons/ci";
+import Login from "./Login";
 
 const Navbar = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
-  
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const onClose = () => {
+    setShowLoginModal(false);
     setShowInviteModal(false);
   };
 
   const handleInviteMembers = () => {
     console.log("Invited members");
     setShowInviteModal(false);
-  }
+  };
 
   return (
     <>
@@ -74,17 +78,31 @@ const Navbar = () => {
           </li>
 
           <li className="flex flex-row items-center gap-3">
-            <Image
-              className="rounded-full h-12 w-12 object-cover cursor-pointer"
-              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZSUyMGltYWdlfGVufDB8fDB8fHww"
-              alt="avatar"
-              width={30}
-              height={30}
-            />
-            <p>Mukesh Gupta</p>
+            {isLoggedIn ? (
+              <>
+                <Image
+                  className="rounded-full h-12 w-12 object-cover cursor-pointer"
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZSUyMGltYWdlfGVufDB8fDB8fHww"
+                  alt="avatar"
+                  width={30}
+                  height={30}
+                />
+                <p>Mukesh Gupta</p>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="bg-gray-200 text_and_icon_button_background w-full flex items-center gap-2 p-2 rounded-md"
+              >
+                <CiLogin size={25} fill="gray" />
+                <span>Login</span>
+              </button>
+            )}
           </li>
         </ul>
       </nav>
+
+      {showLoginModal && <Login onClose={onClose} />}
 
       {showInviteModal && (
         <CommonModal
@@ -97,7 +115,10 @@ const Navbar = () => {
                 placeholder="Enter email address..."
                 className="border border-gray-300 p-2 rounded-md w-full"
               />
-              <button onClick={handleInviteMembers} className="bg-gray-200 text_and_icon_button_background w-full flex items-center gap-2 p-2 rounded-md">
+              <button
+                onClick={handleInviteMembers}
+                className="bg-gray-200 text_and_icon_button_background w-full flex items-center gap-2 p-2 rounded-md"
+              >
                 <FcInvite size={25} fill="gray" />
                 <span>Invite</span>
               </button>

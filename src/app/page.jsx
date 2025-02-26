@@ -8,7 +8,7 @@ const HomePage = () => {
     <>
       <Navbar />
       <Sidebar />
-      <section className="ml-80 mt-20 h-[80vh]">
+      <section className="ml-80 mt-20 h-[83vh] overflow-hidden">
         <DocsEditor />
       </section>
     </>
