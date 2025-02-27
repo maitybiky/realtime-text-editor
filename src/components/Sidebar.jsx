@@ -83,7 +83,7 @@ const Sidebar = () => {
               onChange={(e) => setNewFileName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreateNewFile()}
               type="text"
-              placeholder="Enter file name.ssss.."
+              placeholder="Enter file name..."
               className="w-full border outline-none border-none bg-transparent"
             />
           </li>
