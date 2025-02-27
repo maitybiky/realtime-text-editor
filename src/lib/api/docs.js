@@ -1,14 +1,13 @@
 import API from "@/lib/axios";
 
-export const createDocument = async () => {
+export const createDocument = async (docName) => {
   try {
-    const response = await API.post("/docs", { content: "" });
+    const response = await API.post("/docs", { content: "", name: docName });
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-
 
 export const getDocument = async (id) => {
   try {
@@ -18,7 +17,6 @@ export const getDocument = async (id) => {
     throw error;
   }
 };
-
 
 export const updateDocument = async (id, content) => {
   try {

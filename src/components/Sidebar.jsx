@@ -34,15 +34,15 @@ const Sidebar = () => {
   }, [createNewDocument]);
 
   const handleCreateNewFile = async () => {
-    console.log('hi')
+    console.log("hi");
     if (newFileName.trim() !== "") {
       let formattedName = newFileName.trim();
       if (!formattedName.endsWith(".txt")) {
         formattedName += ".txt"; // Ensure the file has .txt extension
       }
-console.log('formattedName :>> ', formattedName);
-      const response = await createDocument();
-      console.log('response :>> ', response);
+      console.log("formattedName :>> ", formattedName);
+      const response = await createDocument(formattedName);
+      console.log("response :>> ", response);
       setFiles([...files, formattedName]); // Add new file to state
       setNewFileName(""); // Reset input
       setCreateNewDocument(false); // Close input
