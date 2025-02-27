@@ -1,18 +1,48 @@
 import { NextResponse } from "next/server";
 
-import Docs from "@/model/docs";
+
+
+import Workspace from "@/model/workspace";
 import { connectToDatabase } from "@/lib/mongodb";
+import Docs from "@/model/docs";
 
 export async function POST(req) {
   try {
-    const body = await req.json(); 
-    console.log("name :>> ", body);
-    
+    const { userId, name } = await req.json();
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
+    }
 
     await connectToDatabase();
-    const newDoc = await Docs.create({ content: "" });
+
+    // Create new document
+    const newDoc = await Docs.create({ content: "", name });
+
+    const updatedWorkspace = await Workspace.findOneAndUpdate(
+      { userIDs: userId }, // Search for workspace where userId exists in userIDs array
+      {
+        $push: { docs: newDoc._id }, // Add new document ID to the workspace
+      },
+      {
+        new: true, // Return the updated document
+        upsert: true, // Create a new workspace if not found
+        setDefaultsOnInsert: true, // Apply default values on insert
+      }
+    );
+    if (!updatedWorkspace) {
+      return NextResponse.json(
+        { error: "Workspace not found for this user" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json({ documentId: newDoc._id }, { status: 201 });
   } catch (error) {
+    console.error("Error creating document:", error);
     return NextResponse.json(
       { error: "Error creating document" },
       { status: 500 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { createDocument } from "@/lib/api/docs";
+import { createDocument, getDocument } from "@/lib/api/docs";
 import React, { useState, useEffect, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
@@ -10,13 +10,20 @@ const Sidebar = () => {
   const [createNewDocument, setCreateNewDocument] = useState(false);
   const [newFileName, setNewFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [files, setFiles] = useState(["Portfolio.txt"]); // Stores file names
+  const [files, setFiles] = useState([]); // Stores file names
   const inputRef = useRef(null);
-
+  const userId = "67bedd76511be7eb0125e0ff";
   const handleOpenFile = (index) => {
     setSelectedFile(index);
   };
-
+  useEffect(() => {
+    getDocument(userId).then((data) => {
+      console.log("data :>> ", data);
+      // const [myworkspace] = data.workspaces;
+      // console.log("myworkspace :>> ", myworkspace);
+      // setFiles(myworkspace.documents)
+    });
+  }, []);
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (inputRef.current && !inputRef.current.contains(e.target)) {
@@ -41,14 +48,17 @@ const Sidebar = () => {
         formattedName += ".txt"; // Ensure the file has .txt extension
       }
       console.log("formattedName :>> ", formattedName);
-      const response = await createDocument(formattedName);
+      const response = await createDocument({
+        docName: formattedName,
+        userId,
+      });
       console.log("response :>> ", response);
       setFiles([...files, formattedName]); // Add new file to state
       setNewFileName(""); // Reset input
       setCreateNewDocument(false); // Close input
     }
   };
-
+console.log('files :>> ', files);
   return (
     <aside className="h-screen z-5 w-80 fixed left-0 top-20 border-r border-gray-300 bg-gray-100">
       <ul className="flex flex-col w-full gap-4 p-4">
@@ -97,7 +107,7 @@ const Sidebar = () => {
             } flex justify-start gap-2 items-center bg-gray-50 p-3 shadow-md rounded-md border border-gray-300 cursor-pointer`}
           >
             <IoMdDocument fill="gray" size={25} />
-            <span className="text-gray-500">{file}</span>
+            <span className="text-gray-500">{file.name}</span>
           </li>
         ))}
       </ul>
