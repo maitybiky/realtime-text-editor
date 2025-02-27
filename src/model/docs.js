@@ -2,9 +2,13 @@ import mongoose from "mongoose";
 
 const DocsSchema = new mongoose.Schema(
   {
-    content:{
-        type: String,
-        required: [false, "Content is not required"],
+    name: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: [false, "Content is not required"],
     },
     createdAt: {
       type: Date,
