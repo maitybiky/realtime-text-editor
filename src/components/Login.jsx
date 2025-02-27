@@ -5,6 +5,7 @@ import CommonModal from "./CommonModal";
 import Image from "next/image";
 import API from "@/lib/axios";
 
+
 const Login = ({ onClose }) => {
   const [isOpenRegisterModal, setIsOpenRegisterModal] = useState(false);
   const [email, setEmail] = useState("");
@@ -35,8 +36,7 @@ const Login = ({ onClose }) => {
           username,
         }
       );
-
-      console.log("Response:", response);
+      
       alert("User registered successfully");
       onClose();
     } catch (error) {
@@ -60,7 +60,6 @@ const Login = ({ onClose }) => {
         }
       );
 
-      console.log("Response:", response);
       alert("User logged in successfully");
       onClose();
     } catch (error) {
@@ -125,7 +124,7 @@ const Login = ({ onClose }) => {
                 Register
               </button>
               <p className="text-center mt-4">
-                <span>Don't have an account? </span>
+                <span>Already have an account? </span>
                 <span
                   onClick={toggleModal}
                   className="text-blue-500 cursor-pointer"

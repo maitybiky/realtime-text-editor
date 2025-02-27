@@ -2,25 +2,21 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api",
-  withCredentials: true, // Enables sending cookies with requests
+  withCredentials: true, // ✅ Ensures cookies are sent with requests
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-
+// Request Interceptor (Optional: If API requires manual token handling)
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // Example: Using token for authentication
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+    return config; // Cookies will be sent automatically, no need to manually attach token
   },
   (error) => Promise.reject(error)
 );
 
-
+// Response Interceptor (Handle API errors globally)
 API.interceptors.response.use(
   (response) => response,
   (error) => {

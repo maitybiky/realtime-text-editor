@@ -1,33 +1,40 @@
-import { connectToDatabase } from "@/lib/mongodb";
+import { NextResponse } from "next/server";
+import { generateToken } from "@/util/jwt";
 import User from "@/model/user";
+import { connectToDatabase } from "@/lib/mongodb";
 
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
 
-    console.log("email", email, "password", password);
-
-    if (!email || !password) {
-      return Response.json(
-        { message: "Email and password are required" },
-        { status: 400 }
-      );
-    }
-
-    await connectToDatabase(); // Ensure MongoDB connection
-
+    await connectToDatabase();
     const user = await User.findOne({ email });
 
     if (!user || user.password !== password) {
-      return Response.json({ message: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
     }
 
-    return Response.json(
-      { message: "Login successful", user },
+    // ✅ Generate JWT token
+    const token = await generateToken({ email });
+
+    // ✅ Create response
+    const response = NextResponse.json(
+      { message: "Login successful" },
       { status: 200 }
     );
+
+    // ✅ Set JWT token in an HTTP-only cookie
+    response.cookies.set("auth_token", token, {
+      httpOnly: true, // Prevents JavaScript access (Security feature)
+      secure: process.env.NODE_ENV === "production", // Only HTTPS in production
+      sameSite: "Lax", // Protects against CSRF attacks
+      maxAge: 60 * 60 * 24 * 7, // Expires in 7 days
+      path: "/", // Available across the entire domain
+    });
+
+    return response;
   } catch (error) {
-    console.error("Error logging in:", error);
-    return Response.json({ message: "Internal Server Error" }, { status: 500 });
+    console.error("Login error:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
