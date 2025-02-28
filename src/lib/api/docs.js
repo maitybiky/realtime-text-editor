@@ -13,9 +13,9 @@ export const createDocument = async ({ docName, userId }) => {
   }
 };
 
-export const getDocument = async (id) => {
+export const getDocument = async (userId) => {
   try {
-    const response = await API.get(`/workspace/${id}`);
+    const response = await API.get(`/docs?userId=${userId}`);
     return response.data;
   } catch (error) {
     throw error;
