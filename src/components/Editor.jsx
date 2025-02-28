@@ -5,38 +5,51 @@ import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 
-const socket = io("http://192.168.1.2:5000");
-const DocsEditor = () => {
+const socket = io("http://192.168.1.4:5000");
+const DocsEditor = ({ activeDoc }) => {
+
+  const docsId = activeDoc?._id;
+
+  
   const { quill, quillRef } = useQuill();
 
-  console.log(quill);
-  console.log(quillRef);
-
   useEffect(() => {
-    socket.emit("join-workspace", "test-room");
+    if (!docsId) return;
+
+    socket.emit("join-workspace", docsId);
 
     if (quill) {
-      quill.updateContents([{ insert: "hello world" }]);
+      if (activeDoc?.content) {
+        quill.updateContents(activeDoc?.content);
+      }
 
       // Listen for changes from other users
       quill.on("text-change", (delta, oldDelta, source) => {
-        const data = { userId: "surajit", delta ,workspaceId:"test-room"};
+        const fullDelta = quill?.getContents(); 
+        
+        const data = {
+          userId: "67c14a4c41f7d1962d35b120",
+          delta,
+          docsId,
+          fullDelta
+        };
+        console.log("data :>> ", data);
         if (source === "user") {
           socket.emit("send-changes", data);
         }
       });
 
       // Apply received changes
-      socket.on("receive-changes", ({delta}) => {
-        console.log('delta', delta)
-        quill.updateContents(delta);
+      socket.on("receive-changes", (data) => {
+        console.log("delta", data);
+        // quill.updateContents(delta);
       });
     }
 
     return () => {
       socket.off("receive-changes");
     };
-  }, [quill]);
+  }, [quill, docsId]);
 
   return (
     <div className="w-full h-full relative z-0">

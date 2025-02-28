@@ -29,14 +29,27 @@ io.on("connection", (socket) => {
   });
 
   //
-  socket.on("send-changes", async ({ delta, workspaceId }) => {
-    console.log("{ documentId, userId, content }", delta);
-    socket.to(workspaceId).emit("receive-changes", { delta });
+  socket.on("send-changes", async ({ userId, delta, docsId,fullDelta }) => {
+    console.log("{ documentId, userId, content }", { userId, delta, docsId });
     try {
-      await Docs.findByIdAndUpdate("67bec464895b4e078cd8615e", {
-        $set: { content: delta },
+      const doc = await Docs.findById(docsId);
+
+      if (!doc) {
+        throw new Error("Document not found");
+      }
+
+      // Add the current content to the history array before updating
+      doc.history.push({
+        content: doc.content,
+        updatedAt: new Date(), 
+        updatedBy: userId, 
       });
 
+      doc.content = fullDelta;
+
+
+      await doc.save();
+      console.log('doc :>> ', doc);
       // socket.to(documentId).emit("receive-changes", delta);
     } catch (error) {
       console.error("Error updating document:", error);
@@ -52,6 +65,7 @@ io.on("connection", (socket) => {
         const updatedContent = change.updateDescription.updatedFields.content;
 
         console.log(`🔄 Document Updated: ${documentId}`);
+        
         io.to(documentId).emit("receive-changes", updatedContent);
       }
     });

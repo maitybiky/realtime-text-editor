@@ -6,22 +6,24 @@ import { CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import { IoMdDocument } from "react-icons/io";
 
-const Sidebar = () => {
+const Sidebar = ({ setActiveDoc }) => {
   const [createNewDocument, setCreateNewDocument] = useState(false);
   const [newFileName, setNewFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [files, setFiles] = useState([]); // Stores file names
   const inputRef = useRef(null);
-  const userId = "67bedd76511be7eb0125e0ff";
-  const handleOpenFile = (index) => {
+  const userId = "67c14a4c41f7d1962d35b120";
+  const handleOpenFile = (file, index) => {
+    setActiveDoc(file);
     setSelectedFile(index);
   };
   useEffect(() => {
     getDocument(userId).then((data) => {
       console.log("data :>> ", data);
+      setFiles(data.data);
       // const [myworkspace] = data.workspaces;
       // console.log("myworkspace :>> ", myworkspace);
-      // setFiles(myworkspace.documents)
+      // setFiles(myworkspace.documents);
     });
   }, []);
   useEffect(() => {
@@ -58,7 +60,7 @@ const Sidebar = () => {
       setCreateNewDocument(false); // Close input
     }
   };
-console.log('files :>> ', files);
+  console.log("files :>> ", files);
   return (
     <aside className="h-screen z-5 w-80 fixed left-0 top-20 border-r border-gray-300 bg-gray-100">
       <ul className="flex flex-col w-full gap-4 p-4">
@@ -100,7 +102,7 @@ console.log('files :>> ', files);
         )}
         {files.map((file, index) => (
           <li
-            onClick={() => handleOpenFile(index)}
+            onClick={() => handleOpenFile(file, index)}
             key={index}
             className={`${
               selectedFile === index ? "active_file" : ""
