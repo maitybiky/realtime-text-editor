@@ -1,6 +1,7 @@
 "use client";
 
 import { createDocument, getDocument } from "@/lib/api/docs";
+import { store } from "@/util/localstorage";
 import React, { useState, useEffect, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
@@ -12,12 +13,14 @@ const Sidebar = ({ setActiveDoc }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [files, setFiles] = useState([]); // Stores file names
   const inputRef = useRef(null);
-  const userId = "67c14a4c41f7d1962d35b120";
+  const userId = store().getItem("userData")?._id;
+  console.log("userId :>> ", userId);
   const handleOpenFile = (file, index) => {
     setActiveDoc(file);
     setSelectedFile(index);
   };
   useEffect(() => {
+    if (!userId) return;
     getDocument(userId).then((data) => {
       console.log("data :>> ", data);
       setFiles(data.data);
@@ -25,7 +28,7 @@ const Sidebar = ({ setActiveDoc }) => {
       // console.log("myworkspace :>> ", myworkspace);
       // setFiles(myworkspace.documents);
     });
-  }, []);
+  }, [userId]);
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (inputRef.current && !inputRef.current.contains(e.target)) {

@@ -43,10 +43,12 @@ export async function GET(req) {
     }
 
     // Find all documents where the user is in the collaborators array
-    const userDocs = await Docs.find({ "collaborators.userId": userId }).sort({
-      updatedAt: -1,
-    });
-console.log('userDocs :>> ', userDocs);
+    const userDocs = await Docs.find({ "collaborators.userId": userId })
+      .populate("collaborators.userId", "email userName")
+      .sort({
+        updatedAt: -1,
+      });
+    console.log("userDocs :>> ", userDocs);
     return NextResponse.json(
       { success: true, data: userDocs },
       { status: 200 }
@@ -59,6 +61,3 @@ console.log('userDocs :>> ', userDocs);
     );
   }
 }
-
-
-

@@ -9,11 +9,13 @@ const HomePage = () => {
   const [activeDoc, setActiveDoc] = useState();
   return (
     <>
-      <Navbar />
+      <Navbar activeDoc={activeDoc} />
       <Sidebar setActiveDoc={setActiveDoc} />
-      <section className="ml-80 mt-20 h-[83vh] overflow-hidden">
-        <DocsEditor activeDoc={activeDoc} />
-      </section>
+      {activeDoc && (
+        <section className="ml-80 mt-20 h-[83vh] overflow-hidden">
+          <DocsEditor activeDoc={activeDoc} />
+        </section>
+      )}
     </>
   );
 };

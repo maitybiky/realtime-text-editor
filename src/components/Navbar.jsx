@@ -7,34 +7,34 @@ import { GoDotFill } from "react-icons/go";
 import CommonModal from "./CommonModal";
 import { CiLogin } from "react-icons/ci";
 import Login from "./Login";
+import { addMember } from "@/lib/api/docs";
+import { store } from "@/util/localstorage";
 
-
-const Navbar = () => {
+const Navbar = ({ activeDoc }) => {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-
+  const [email, setEmail] = useState("");
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('/api/auth/getUser', {
-        method: 'GET'
+      const response = await fetch("/api/auth/getUser", {
+        method: "GET",
       });
 
       if (response.status === 401) {
-        setIsLoggedIn(false);  
-        setShowLoginModal(true);  
+        setIsLoggedIn(false);
+        setShowLoginModal(true);
       } else {
-        setIsLoggedIn(true);  
+        setIsLoggedIn(true);
       }
     } catch (error) {
-      console.error('Error fetching data', error);
+      console.error("Error fetching data", error);
     }
   };
 
   useEffect(() => {
     checkAuthStatus();
-  },[]);
-
+  }, []);
 
   const onClose = () => {
     setShowLoginModal(false);
@@ -42,11 +42,11 @@ const Navbar = () => {
   };
 
   const handleInviteMembers = () => {
-    console.log("Invited members");
+    console.log("activeDoc :>> ", activeDoc);
+    addMember(activeDoc._id, email);
     setShowInviteModal(false);
   };
-
-
+  console.log("activeDoc :>> ", activeDoc);
   return (
     <>
       <nav className="border fixed top-0 z-5 border-gray-300 w-full h-20 px-10 flex flex-row justify-between items-center overflow-hidden">
@@ -67,7 +67,7 @@ const Navbar = () => {
         <ul className="flex flex-row items-center gap-10">
           <li className="flex flex-row items-center gap-1">
             <GoDotFill size={25} fill="green" />
-            <p>Mukesh, Veeru </p>
+            <p>{activeDoc?.collaborators?.map((it) => it?.userId?.userName)?.join(",")}</p>
           </li>
           <li className="flex items-center gap-1">
             <Image
@@ -91,7 +91,9 @@ const Navbar = () => {
               width={20}
               height={20}
             />
-            <span className="text-lg font-semibold">+ 30 Joined</span>
+            <span className="text-lg font-semibold">
+              + {activeDoc?.collaborators?.length}
+            </span>
           </li>
           <li
             onClick={() => setShowInviteModal(true)}
@@ -111,7 +113,7 @@ const Navbar = () => {
                   width={30}
                   height={30}
                 />
-                <p>Mukesh Gupta</p>
+                <p>{store().getItem("userData")?.email}</p>
               </>
             ) : (
               <button
@@ -135,6 +137,9 @@ const Navbar = () => {
           Body={
             <div className="w-full flex gap-5">
               <input
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
                 type="text"
                 placeholder="Enter email address..."
                 className="border border-gray-300 p-2 rounded-md w-full"

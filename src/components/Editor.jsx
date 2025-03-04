@@ -4,13 +4,13 @@ import React, { useEffect } from "react";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
+import { store } from "@/util/localstorage";
 
-const socket = io("http://192.168.1.4:5000");
+const socket = io("http://192.168.1.5:5000");
 const DocsEditor = ({ activeDoc }) => {
-
   const docsId = activeDoc?._id;
+  const userId = store().getItem("userData")?._id;
 
-  
   const { quill, quillRef } = useQuill();
 
   useEffect(() => {
@@ -25,24 +25,24 @@ const DocsEditor = ({ activeDoc }) => {
 
       // Listen for changes from other users
       quill.on("text-change", (delta, oldDelta, source) => {
-        const fullDelta = quill?.getContents(); 
-        
+        const fullDelta = quill?.getContents();
+
         const data = {
-          userId: "67c14a4c41f7d1962d35b120",
+          userId,
           delta,
           docsId,
-          fullDelta
+          fullDelta,
         };
-        console.log("data :>> ", data);
         if (source === "user") {
           socket.emit("send-changes", data);
         }
       });
 
       // Apply received changes
-      socket.on("receive-changes", (data) => {
-        console.log("delta", data);
-        // quill.updateContents(delta);
+      socket.on("receive-changes", (delta) => {
+        console.log('delta :>> ', delta);
+        quill.setContents(delta);
+        quill.setSelection(quill.getLength());
       });
     }
 

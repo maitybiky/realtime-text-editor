@@ -21,6 +21,16 @@ export const getDocument = async (userId) => {
     throw error;
   }
 };
+export const addMember = async (docId, email) => {
+  try {
+    const response = await API.put(`/docs/${docId}`, {
+      email,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const updateDocument = async (id, content) => {
   try {

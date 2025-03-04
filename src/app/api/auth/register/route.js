@@ -8,26 +8,32 @@ export async function POST(req) {
     const { email, password, username } = await req.json();
 
     if (!email || !password || !username) {
-      return NextResponse.json({ message: "All fields are required" }, { status: 400 });
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
     }
 
     await connectToDatabase();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ message: "User already exists" }, { status: 409 });
+      return NextResponse.json(
+        { message: "User already exists" },
+        { status: 409 }
+      );
     }
 
     // ✅ Create new user
     const newUser = new User({ email, userName: username, password });
-    await newUser.save();
-
+    const userData = await newUser.save();
+    console.log("userData :>> ", userData);
     // ✅ Generate JWT token
     const token = await generateToken({ email });
 
     // ✅ Create response
     const response = NextResponse.json(
-      { message: "User registered successfully" },
+      { message: "User registered successfully", user: userData },
       { status: 201 }
     );
 
@@ -43,6 +49,9 @@ export async function POST(req) {
     return response;
   } catch (error) {
     console.error("Registration error:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
