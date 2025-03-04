@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FcInvite } from "react-icons/fc";
 import { GoDotFill } from "react-icons/go";
@@ -8,10 +8,33 @@ import CommonModal from "./CommonModal";
 import { CiLogin } from "react-icons/ci";
 import Login from "./Login";
 
+
 const Navbar = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch('/api/auth/getUser', {
+        method: 'GET'
+      });
+
+      if (response.status === 401) {
+        setIsLoggedIn(false);  
+        setShowLoginModal(true);  
+      } else {
+        setIsLoggedIn(true);  
+      }
+    } catch (error) {
+      console.error('Error fetching data', error);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
+  },[]);
+
 
   const onClose = () => {
     setShowLoginModal(false);
@@ -22,6 +45,7 @@ const Navbar = () => {
     console.log("Invited members");
     setShowInviteModal(false);
   };
+
 
   return (
     <>

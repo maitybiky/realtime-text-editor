@@ -1,16 +1,27 @@
-const jwt = require("jsonwebtoken");
+import * as jose from 'jose';
 
-const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY;
+// Secret key should be properly encoded for jose to use
+async function getSecretKey() {
+  const secret = process.env.NEXT_PUBLIC_SECRET_KEY;
+  // Convert string to Uint8Array for jose's API
+  return new TextEncoder().encode(secret);
+}
 
 // Generate an access token
-async function generateToken(payload, expiresIn = "72h") {
-  return jwt.sign(payload, SECRET_KEY, { expiresIn });
+export async function generateToken(payload, expiresIn = "72h") {
+  const secretKey = await getSecretKey();
+  return await new jose.SignJWT(payload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime(expiresIn)
+    .sign(secretKey);
 }
 
 // Verify access token
-async function verifyToken(token) {
+export async function verifyToken(token) {
   try {
-    return jwt.verify(token, SECRET_KEY);
+    const secretKey = await getSecretKey();
+    const { payload } = await jose.jwtVerify(token, secretKey);
+    return payload;
   } catch (error) {
     console.error("Invalid token:", error.message);
     return null;
@@ -18,12 +29,6 @@ async function verifyToken(token) {
 }
 
 // Decode token without verifying
-function decodeToken(token) {
-  return jwt.decode(token);
+export function decodeToken(token) {
+  return jose.decodeJwt(token);
 }
-
-module.exports = {
-  generateToken,
-  verifyToken,
-  decodeToken,
-};
