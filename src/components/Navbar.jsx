@@ -10,7 +10,7 @@ import Login from "./Login";
 
 const Navbar = () => {
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const onClose = () => {

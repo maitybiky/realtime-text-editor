@@ -12,7 +12,7 @@ export function middleware(req) {
     url.pathname === "/api/auth/register"
   ) {
     console.log("skipping middleware");
-    return NextResponse.next(); // Skip middleware
+    return NextResponse.next(); // Skip middlewarex
   }
 
   const cookieStore = cookies();
@@ -30,7 +30,7 @@ export function middleware(req) {
   }
 
   try {
-    console.log('middleware executing...');
+    console.log("middleware executing...");
     const userData = verifyToken(token);
     req.user = userData;
     return NextResponse.next();
