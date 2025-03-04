@@ -6,7 +6,18 @@ import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 import { store } from "@/util/localstorage";
 
-const socket = io("http://192.168.1.5:5000");
+const socket = io("http://192.168.1.9:5000");
+
+// Debounce function
+const debounce = (func, wait) => {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+};
+
 const DocsEditor = ({ activeDoc }) => {
   const docsId = activeDoc?._id;
   const userId = store().getItem("userData")?._id;
@@ -20,10 +31,14 @@ const DocsEditor = ({ activeDoc }) => {
 
     if (quill) {
       if (activeDoc?.content) {
-        quill.updateContents(activeDoc?.content);
+        quill.setContents(activeDoc?.content);
       }
 
-      // Listen for changes from other users
+      // Debounced function to emit changes
+      const emitChanges = debounce((data) => {
+        socket.emit("send-changes", data);
+      }, 300); // 300ms delay
+
       quill.on("text-change", (delta, oldDelta, source) => {
         const fullDelta = quill?.getContents();
 
@@ -33,14 +48,14 @@ const DocsEditor = ({ activeDoc }) => {
           docsId,
           fullDelta,
         };
+
         if (source === "user") {
-          socket.emit("send-changes", data);
+          emitChanges(data);
         }
       });
 
-      // Apply received changes
       socket.on("receive-changes", (delta) => {
-        console.log('delta :>> ', delta);
+        console.log("delta :>> ", delta);
         quill.setContents(delta);
         quill.setSelection(quill.getLength());
       });
@@ -49,7 +64,7 @@ const DocsEditor = ({ activeDoc }) => {
     return () => {
       socket.off("receive-changes");
     };
-  }, [quill, docsId]);
+  }, [quill, activeDoc, docsId]);
 
   return (
     <div className="w-full h-full relative z-0">

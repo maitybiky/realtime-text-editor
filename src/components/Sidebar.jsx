@@ -7,7 +7,7 @@ import { CiSearch } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import { IoMdDocument } from "react-icons/io";
 
-const Sidebar = ({ setActiveDoc }) => {
+const Sidebar = ({ setActiveDoc, activeDoc }) => {
   const [createNewDocument, setCreateNewDocument] = useState(false);
   const [newFileName, setNewFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -22,11 +22,7 @@ const Sidebar = ({ setActiveDoc }) => {
   useEffect(() => {
     if (!userId) return;
     getDocument(userId).then((data) => {
-      console.log("data :>> ", data);
       setFiles(data.data);
-      // const [myworkspace] = data.workspaces;
-      // console.log("myworkspace :>> ", myworkspace);
-      // setFiles(myworkspace.documents);
     });
   }, [userId]);
   useEffect(() => {
@@ -46,24 +42,30 @@ const Sidebar = ({ setActiveDoc }) => {
   }, [createNewDocument]);
 
   const handleCreateNewFile = async () => {
-    console.log("hi");
     if (newFileName.trim() !== "") {
       let formattedName = newFileName.trim();
       if (!formattedName.endsWith(".txt")) {
         formattedName += ".txt"; // Ensure the file has .txt extension
       }
-      console.log("formattedName :>> ", formattedName);
       const response = await createDocument({
         docName: formattedName,
         userId,
       });
-      console.log("response :>> ", response);
-      setFiles([...files, formattedName]); // Add new file to state
+      setFiles([
+        { _id: response.data._id, name: response.data.name },
+        ...files,
+      ]); // Add new file to state
       setNewFileName(""); // Reset input
       setCreateNewDocument(false); // Close input
     }
   };
-  console.log("files :>> ", files);
+
+  useEffect(() => {
+    if (files.length > 0) {
+      console.log("files :>> ", files);
+    }
+  }, [files]);
+
   return (
     <aside className="h-screen z-5 w-80 fixed left-0 top-20 border-r border-gray-300 bg-gray-100">
       <ul className="flex flex-col w-full gap-4 p-4">
