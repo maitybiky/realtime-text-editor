@@ -16,9 +16,19 @@ const Sidebar = ({ setActiveDoc, activeDoc }) => {
   const userId = store().getItem("userData")?._id;
   console.log("userId :>> ", userId);
   const handleOpenFile = (file, index) => {
+    setFiles((prev) => {
+      return prev.map((it) => {
+        if (activeDoc?._id === it?._id) {
+          return activeDoc;
+        }
+        return it;
+      });
+    });
     setActiveDoc(file);
     setSelectedFile(index);
   };
+
+
   useEffect(() => {
     if (!userId) return;
     getDocument(userId).then((data) => {

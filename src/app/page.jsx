@@ -8,6 +8,7 @@ import DocsEditor from "@/components/Editor";
 
 const HomePage = () => {
   const [activeDoc, setActiveDoc] = useState();
+  
   return (
     <>
       <Navbar activeDoc={activeDoc} />
@@ -17,7 +18,7 @@ const HomePage = () => {
       />
       {activeDoc ? (
         <section className="ml-80 mt-20 h-[83vh] overflow-hidden">
-          <DocsEditor activeDoc={activeDoc} />
+          <DocsEditor activeDoc={activeDoc} setActiveDoc={setActiveDoc} />
         </section>
       ) : (
         <div className=" overflow-hidden ml-20 flex gap-10 flex-col items-center justify-center h-[100vh] w-full">
