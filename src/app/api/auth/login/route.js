@@ -11,7 +11,10 @@ export async function POST(req) {
     const user = await User.findOne({ email });
 
     if (!user || user.password !== password) {
-      return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json(
+        { message: "Invalid credentials" },
+        { status: 401 }
+      );
     }
 
     // ✅ Generate JWT token
@@ -19,7 +22,7 @@ export async function POST(req) {
 
     // ✅ Create response
     const response = NextResponse.json(
-      { message: "Login successful" },
+      { message: "Login successful", user },
       { status: 200 }
     );
 
@@ -35,6 +38,9 @@ export async function POST(req) {
     return response;
   } catch (error) {
     console.error("Login error:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

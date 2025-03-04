@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import CommonModal from "./CommonModal";
 import Image from "next/image";
 import API from "@/lib/axios";
-
+import { store } from "@/util/localstorage";
 
 const Login = ({ onClose }) => {
   const [isOpenRegisterModal, setIsOpenRegisterModal] = useState(false);
@@ -28,15 +28,12 @@ const Login = ({ onClose }) => {
     }
 
     try {
-      const response = await API.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
-        {
-          email,
-          password,
-          username,
-        }
-      );
-      
+      const response = await API.post("/auth/register", {
+        email,
+        password,
+        username,
+      });
+      store().setItem("userData", response.data.user);
       alert("User registered successfully");
       onClose();
     } catch (error) {
@@ -52,13 +49,11 @@ const Login = ({ onClose }) => {
     }
 
     try {
-      const response = await API.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
-        {
-          email,
-          password,
-        }
-      );
+      const response = await API.post("/auth/login", {
+        email,
+        password,
+      });
+      store().setItem("userData", response.data.user);
 
       alert("User logged in successfully");
       onClose();

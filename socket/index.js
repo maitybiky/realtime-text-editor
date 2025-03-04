@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
   });
 
   //
-  socket.on("send-changes", async ({ userId, delta, docsId,fullDelta }) => {
+  socket.on("send-changes", async ({ userId, delta, docsId, fullDelta }) => {
     console.log("{ documentId, userId, content }", { userId, delta, docsId });
     try {
       const doc = await Docs.findById(docsId);
@@ -41,38 +41,37 @@ io.on("connection", (socket) => {
       // Add the current content to the history array before updating
       doc.history.push({
         content: doc.content,
-        updatedAt: new Date(), 
-        updatedBy: userId, 
+        updatedAt: new Date(),
+        updatedBy: userId,
       });
 
       doc.content = fullDelta;
 
-
       await doc.save();
-      console.log('doc :>> ', doc);
+    
       // socket.to(documentId).emit("receive-changes", delta);
     } catch (error) {
       console.error("Error updating document:", error);
     }
   });
-  connectToDatabase().then(() => {
-    console.log("📡 MongoDB Change Stream Started");
 
-    const changeStream = Docs.watch();
-    changeStream.on("change", (change) => {
-      if (change.operationType === "update") {
-        const documentId = change.documentKey._id.toString();
-        const updatedContent = change.updateDescription.updatedFields.content;
-
-        console.log(`🔄 Document Updated: ${documentId}`);
-        
-        io.to(documentId).emit("receive-changes", updatedContent);
-      }
-    });
-  });
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
 });
+connectToDatabase().then(() => {
+  console.log("📡 MongoDB Change Stream Started");
 
+  const changeStream = Docs.watch();
+  changeStream.on("change", (change) => {
+    if (change.operationType === "update") {
+      const documentId = change.documentKey._id.toString();
+      const updatedContent = change.updateDescription.updatedFields.content;
+
+      console.log(`🔄 Document Updated: ${documentId}`);
+
+      io.to(documentId).emit("receive-changes", updatedContent);
+    }
+  });
+});
 server.listen(5000, () => console.log("Server running on port 5000"));

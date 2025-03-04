@@ -6,3 +6,4 @@ export async function GET() {
   await connectToDatabase()
   return NextResponse.json({ data: "n" });
 }
+
