@@ -43,7 +43,10 @@ export async function GET(req) {
     }
 
     // Find all documents where the user is in the collaborators array
-    const userDocs = await Docs.find({ "collaborators.userId": userId })
+    const userDocs = await Docs.find(
+      { "collaborators.userId": userId },
+      { name: 1 }
+    )
       .populate("collaborators.userId", "email userName")
       .sort({
         updatedAt: -1,

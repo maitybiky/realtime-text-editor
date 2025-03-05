@@ -13,9 +13,17 @@ export const createDocument = async ({ docName, userId }) => {
   }
 };
 
-export const getDocument = async (userId) => {
+export const getMyDocuments = async (userId) => {
   try {
     const response = await API.get(`/docs?userId=${userId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+export const getDocumentData = async (docId) => {
+  try {
+    const response = await API.get(`/docs/${docId}`);
     return response.data;
   } catch (error) {
     throw error;

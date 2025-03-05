@@ -1,6 +1,6 @@
 "use client";
 
-import { createDocument, getDocument } from "@/lib/api/docs";
+import { createDocument, getMyDocuments } from "@/lib/api/docs";
 import { store } from "@/util/localstorage";
 import React, { useState, useEffect, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
@@ -31,7 +31,7 @@ const Sidebar = ({ setActiveDoc, activeDoc }) => {
 
   useEffect(() => {
     if (!userId) return;
-    getDocument(userId).then((data) => {
+    getMyDocuments(userId).then((data) => {
       setFiles(data.data);
     });
   }, [userId]);

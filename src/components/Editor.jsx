@@ -1,9 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 import { store } from "@/util/localstorage";
+import { getDocumentData } from "@/lib/api/docs";
+import BackdropLoading from "./BackDrop";
 
 const socket = io("http://localhost:5000");
 
@@ -19,12 +21,25 @@ const debounce = (func, wait) => {
 
 const DocsEditor = ({ activeDoc, setActiveDoc }) => {
   const docsId = activeDoc?._id;
+  const [currentDocDocData, setCurrentDocData] = useState();
+  const [loading, setLoading] = useState(false);
   const userId = store().getItem("userData")?._id;
   const { quill, quillRef } = useQuill();
 
   useEffect(() => {
-    if (!quill || !docsId) return;
-
+    if (!activeDoc?._id) return;
+    setLoading(true);
+    getDocumentData(activeDoc._id)
+      .then((res) => {
+        setCurrentDocData(res.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [activeDoc?._id]);
+  useEffect(() => {
+    if (!quill || loading || !currentDocDocData) return;
+    const docsId = currentDocDocData?._id;
     // Join the new workspace
     socket.emit("join-workspace", docsId);
 
@@ -32,7 +47,7 @@ const DocsEditor = ({ activeDoc, setActiveDoc }) => {
     socket.off("receive-changes");
 
     // Load document content
-    quill.setContents(activeDoc?.content || []);
+    quill.setContents(currentDocDocData?.content || []);
 
     // Debounced function to emit changes
     const emitChanges = debounce((data) => {
@@ -65,10 +80,13 @@ const DocsEditor = ({ activeDoc, setActiveDoc }) => {
       quill.off("text-change", handleTextChange);
       socket.off("receive-changes", handleReceiveChanges);
     };
-  }, [quill, docsId]);
-
+  }, [quill, currentDocDocData, loading]);
+  // if (loading) {
+  //   return <h2>loading</h2>;
+  // }
   return (
     <div className="w-full h-full relative z-0">
+      {loading && <BackdropLoading />}
       <div ref={quillRef} />
     </div>
   );
