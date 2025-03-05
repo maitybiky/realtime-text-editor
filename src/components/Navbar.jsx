@@ -48,6 +48,37 @@ const Navbar = ({ activeDoc }) => {
   };
   console.log("activeDoc :>> ", activeDoc);
   return (
+    <header className="bg-gradient-to-r w-full fixed top-0 z-5 from-green-800 via-green-700 to-green-600 text-white py-4 px-6 flex items-center justify-between shadow-lg">
+      {/* Logo */}
+      <div className="flex items-center space-x-3">
+        {/* <LightningBoltIcon className="w-8 h-8 text-yellow-300 animate-pulse" /> */}
+        <h1 className="text-2xl font-bold tracking-wide">FunkyEdit</h1>
+      </div>
+
+      {/* Collaboration Info */}
+      <div className="flex items-center space-x-4">
+        {/* <UsersIcon className="w-6 h-6" /> */}
+        <span className="text-lg font-medium">Live Editing</span>
+      </div>
+
+      {/* Current Users List */}
+      <div className="flex items-center space-x-2">
+        {["Alice", "Bob", "Charlie"].map((user, index) => (
+          <div key={index} className="flex items-center space-x-1 bg-white bg-opacity-20 px-3 py-1 rounded-full">
+            {/* <UserCircleIcon className="w-5 h-5 text-white" /> */}
+            <span className="text-sm font-medium">{user}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Actions */}
+      <button className="flex items-center space-x-2 bg-black bg-opacity-40 hover:bg-opacity-60 px-4 py-2 rounded-lg transition-all duration-300">
+        {/* <SaveIcon className="w-5 h-5" /> */}
+        <span>Save</span>
+      </button>
+    </header>
+  );
+  return (
     <>
       <nav className="border fixed top-0 z-5 border-gray-300 w-full h-20 px-10 flex flex-row justify-between items-center overflow-hidden">
         <ul className="flex flex-row items-center gap-16">
